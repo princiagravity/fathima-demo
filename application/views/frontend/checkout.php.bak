@@ -1,0 +1,381 @@
+<div class="page-content-wrapper">
+      <div class="container">
+        <?php
+        $phone_no=$name=$email_id=$address=$customer_id=$street=$landmark=$addresstype="";
+        $name=$_SESSION['userdata']['name'];
+        $phone_no=$_SESSION['userdata']['mobile'];
+        if($customer)
+        {
+
+          $customer_id=$customer->id;
+          $email_id=$customer->email_id;
+          $address=$customer->address;
+          $addresstype=$customer->addresstype;
+          $street=$customer->street;
+          $landmark=$customer->landmark;
+          if(!$area)
+          {
+          $area=$customer->area;
+          }
+        }
+        ?>
+		
+		<style>
+		.data-content
+		{
+			display:block;
+			width:100% !important;
+			max-width:100% !important;
+		}
+		</style>
+          <form id="confirm_payment" method="POST" action="" data-form="ajaxform" enctype="multipart/form-data" >
+        <!-- Checkout Wrapper-->
+        <div class="checkout-wrapper-area py-3">
+          <!-- Billing Address-->
+          <div class="billing-information-card mb-3">
+            <div class="card billing-information-title-card bg-danger">
+              <div class="card-body">
+                <h6 class="text-center mb-0 text-white">Billing Information</h6>
+              </div>
+            </div>
+            <div class="card user-data-card">
+              <div class="card-body">                                   
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <div class="title align-items-center"><span>Full Name</span></div>
+                  <div class="data-content">
+				  <input class="form-control" style="background:#e8f0fe;color:#000" type="text" name="name" value="<?php echo $name;?>" required readonly><!-- SUHA JANNAT --></div>
+                </div>
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <div class="title align-items-center"><span>Email Address</span></div>
+                  <div class="data-content">
+				  <input class="form-control" style="background:#e8f0fe;color:#000" type="email" name="email_id" value="<?php echo $email_id;?>" required readonly></div>
+                </div>
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <div class="title align-items-center"><span>Phone</span></div>
+                  <div class="data-content">
+				  <input class="form-control" style="background:#e8f0fe;color:#000" type="text" name="mobile" value="<?php echo $phone_no;?>" id="mobile" required readonly>
+                  <p class="phone" style="display: none;"></p>
+                </div>
+                </div>
+           
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <!--<h4>Shipping Address</h4>-->
+                  <div class="data-content"><span></span>
+                </div>
+                </div>
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <div class="title align-items-center"><!-- <i class="lni lni-map-marker"></i> --><span>Address Type</span></div>
+                  <div class="data-content">
+                    <select  class="form-control" name="addresstype" id="addresstype" class="form-group"  required style="width: 100%;background:#e8f0fe;color:#000" required>
+                    <?php
+                      if($addresstype=="")
+                      {
+                      ?>
+                          <option value="" class="form-group" selected disabled>Select Address Type</option>
+                          <?php
+                          }
+                          else{?>
+                          <option value="<?php echo $addresstype;?>" class="form-group" selected><?php echo $addresstype;?></option>
+                         <?php } ?>
+                          
+                          <option class="form-group" value="House">House</option>
+                          <option class="form-group" value="Office">Office</option>
+                          <option class="form-group" value="Appartments">Appartments</option>
+                          <option class="form-group" value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <div class="title align-items-center"><span>Address/Floor</span></div>
+                  <div class="data-content">
+				  <textarea  class="form-control" style="background:#e8f0fe;color:#000" name="address" value="<?php echo $address;?>" id="address" required><?php echo $address;?></textarea>
+                </div>
+                </div>
+              <!-- 
+                <div class="single-profile-data align-items-center justify-content-between">
+                  <div class="title align-items-center"><span>Landmark</span></div>
+                  <div class="data-content">
+				  <input  class="form-control" style="background:#e8f0fe;color:#000" type="text" name="landmark" value="<?php echo $landmark;?>" id="landmark" required>
+                </div>
+                </div> -->
+                <!-- Edit Address--><!-- <a class="btn btn-danger w-100" href="edit-profile.html">Edit Billing Information</a> -->
+              </div>
+            </div>
+          </div>
+           <!-- Coupon Area-->
+           <div class="card coupon-card mb-3">
+            <div class="card-body">
+              <div class="apply-coupon">
+                <h6 class="mb-0">Have a coupon?<span> <button class="btn btn-primary get_offers" type="button" style="background-color: #049444;
+    border-color: #026930;">View Offers</button></span></h6> 
+                <p class="mb-2 cart-status text-success"><?php  if($this->session->userdata('promoid')){?> Successfully Applied <?php } else{?>Select coupon code here &amp; get awesome discounts!<?php }?></p>
+               
+                <div class="coupon-form">
+                  <form action="#">
+                    <input type="hidden" id="actual_total" value="<?php $items_total;?>">
+                  <!--   <input class="form-control promocode" type="text" placeholder="SUHA30"> -->
+                
+                    <select class="form-control promocode" class="promocode" name="promo_code">
+                    <option value="" selected disabled >Choose</option>
+                      <?php if($promolist){foreach($promolist as $promo)
+                      {
+                      if(($this->session->userdata('promoid')) && $this->session->userdata('promoid') == $promo->promo_id)
+                      {?>
+                      <option selected value="<?php echo $promo->promo_id;?>">#<?php echo $promo->promo_code;?></option>
+                        <?php
+                      }else{ ?>
+                      <option value="<?php echo $promo->promo_id;?>">#<?php echo $promo->promo_code;?></option>
+                      <?php } }
+                      }?>
+                     
+                    </select>
+               
+                    <!-- <input type="hidden" id="total_amount" name="total_amount" value="<?php //echo $this->session->userdata('cart_total');?>"> -->
+                  
+                    <button class="btn btn-primary cart-apply" type="button" style="background-color: #049444;
+    border-color: #026930;">Apply</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+<!-- my modal-->
+<div id="myModal" class="modal" style="z-index:99999999">
+
+<!-- Modal content -->
+<div class="modal-content" >
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-right">
+      <span class="close" onclick="$('.modal').hide()">&times;</span>
+      </div>
+    </div>
+    <div class="row">
+      <?php if($promolist){foreach($promolist as $promo){
+      ?>
+   <div class="card">
+     <div class="card-body">
+     <h6 class="card-header"><?php echo $promo->name;?></h6>
+<h7 class="card-title">Code: #<?php echo $promo->promo_code;?></h7>
+<p class="card-text"><?php echo $promo->description;?></p>
+<div class="card text-right"><a href="#" class="btn btn-primary use_code" style="background-color: #049444;
+    border-color: #026930;" id="<?php echo $promo->promo_id;?>">Use</a></div>
+   </div>
+  
+   </div>
+   <?php   }}
+   else
+   {
+     ?>
+    <div class="card">
+    <div class="card-body">
+      <h7 class="card-text">Offers Not Available</h7>
+    </div>
+    </div>
+    <?php
+   }?>
+    </div>
+  </div>
+  
+</div>
+
+</div>
+<?php if($reward_point >0)
+{?>
+<div class="card coupon-card mb-3">
+            <div class="card-body">
+              <div class="redeem-point">
+               
+                <div class="coupon-form">
+                <p><h5>You have <?php echo $reward_point?> Points. That's AED. <?php echo $reward_point;?></h5></p>
+                <p><h7><a class="redeemreward"> Click Here To Redeem</a></h7></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <?php }?>
+
+          <!-- Shipping Method Choose-->
+          <div class="shipping-method-choose mb-3">
+            <div class="card shipping-method-choose-title-card bg-success">
+              <div class="card-body">
+                <h6 class="text-center mb-0 text-white">Payment Type Choose</h6>
+              </div>
+            </div>
+           
+                <div class="row">
+                   <div class="col-6" style="padding-right:7px">
+                        <div class="card shipping-method-choose-card">
+              <div class="card-body" style="min-height:135px">
+                <div class="shipping-method-choose">
+                  <ul class="ps-0">
+                    <div class="row">
+                 
+                    <li>
+					  <label for="fastShipping" style="padding:10px 0px">
+                      <input id="fastShipping" style="visibility: visible; margin-top: 5px;" class="pay_type" type="radio" name="payment_type" value="cash on delivery" checked>
+                    <img src="<?php echo base_url();?>img/cash-on-delivery.png" style="display: block;
+    margin: 0px auto;"/> 	<span style="text-align: center;
+    margin: 0px auto;
+    display: block;
+    font-size: 14px;
+    padding-top: 7%;
+    color: #000;">Cash On Delivery </span></label>
+                      <div class="check"  style="opacity:0;"></div>
+                    </li>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+                        </div>
+                   </div>
+
+                    <div class="col-6"  style="padding-left:7px">
+                        <div class="card shipping-method-choose-card">
+              <div class="card-body" style="min-height:135px">
+                <div class="shipping-method-choose">
+                  <ul class="ps-0">
+                    <div class="row">
+                    
+                    <li>
+					 <label for="normalShipping"  style="padding:10px 0px">
+                      <input id="normalShipping" style="visibility: visible; margin-top: 5px;"  class="pay_type" type="radio" name="payment_type" value="card on delivery">
+                     <img src="<?php echo base_url();?>img/debit-card.png" style="display: block;
+    margin: 0px auto;"/><span style="text-align: center;
+    margin: 0px auto;
+    display: block;
+    font-size: 14px;
+    padding-top: 7%;
+    color: #000;">	 Card Payment </span></label>
+                      <div class="check" style="opacity:0;"></div>
+                    </li>
+                    </div>
+                 
+                   
+                  </ul>
+                  <input type="hidden" id="payment_type" name="payment_type" value="cash on delivery">
+                  <input type="hidden" id="area" name="area" value="<?php echo $area;?>">
+                  <input type="hidden" id="delivery_type" name="delivery_type" value="<?php echo $delivery_type;?>">
+                  <input type="hidden" id="status" name="status" value="1">
+                </div>
+                 </div>
+              </div>
+              </div>
+              
+
+              </div>
+           
+          </div>
+          <!-- Cart Amount Area-->
+          <div class="card cart-amount-area">
+            <div class="card-body d-flex align-items-center justify-content-between">
+              <div class="container p-1">
+<div class="row p-1">
+
+<div class="col-8">
+<b>Subtotal</b>
+</div>
+<div class="col-4">
+<!--<i class="lni lni-rupee"></i>--> AED <?php echo $items_total; ?>
+</div>
+<input type="hidden" name="cart_total" value="<?php echo $items_total;?>" id="items">
+</div>
+
+
+            
+			
+       <div class="row p-1">
+                <div class="col-8">
+<b>Delivery Fee</b>
+</div>
+<div class="col-4 del_charge">
+<!--<i class="lni lni-rupee"></i>--> AED <?php echo $delivery;?>
+</div>
+<input type="hidden" name="delivery_charge" id="delivery_charge" value="<?php echo $delivery;?>">
+
+              </div>
+
+              <div class="row p-1">
+<div class="col-8">
+<b>Discount</b>
+</div>
+<div class="col-4 discount">
+<!--<i class="lni lni-rupee"></i>--> AED <?php echo $discount;?>
+</div>
+<input type="hidden" name="discount" id="discount" value="<?php echo $discount;?>">
+</div>
+
+              <div class="row p-1">
+                <div class="col-8">
+<b>Total before VAT</b>
+</div>
+<div class="col-4 beforetax">
+<!--<i class="lni lni-rupee"></i>--> AED <?php echo $total_before_vat;?>
+
+</div>
+<input type="hidden" name="total_before_vat" id="beforetax_amount" value="<?php echo $total_before_vat;?>">
+              </div>
+              <div class="row p-1">
+                <div class="col-8">
+<b>VAT incl.</b>
+</div>
+<div class="col-4 tax">
+<!--<i class="lni lni-rupee"></i>--> AED <?php echo $tax_amount;?>
+</div>
+<input type="hidden" name="tax_amount" id="tax_amount" value="<?php echo $tax_amount;?>">
+<input type="hidden" name="tax" id="tax" value="5">
+              </div>
+             
+			 
+    
+            
+             
+        
+             
+             
+              
+
+
+ 
+            
+             
+                  <div class="row p-1">
+<div class="col-8">
+<span style="font-size:18px; font-weight:600; color:#000">Payable Amount</span>
+</div>
+<div class="col-4 ot">
+<span style="font-size:18px; font-weight:600;color:#000">
+<!--<i class="lni lni-rupee"></i>--> AED <span class=""><?php echo $order_total;?></span>
+</span>
+</div>
+<input type="hidden" name="order_total" id="order_total" value="<?php echo $order_total;?>">
+              </div>
+              
+              <div class="row p-1">
+<div class="col-md-12" style="text-align: right;">
+<input type="hidden" name="id" id="id" value="<?php echo $customer_id;?>">
+<input type="hidden" name="offer_product_id" id="offer_product_id" value="<?php echo $offer_product_id;?>">
+<input type="hidden" name="remarks" id="remarks" value="<?php echo $remarks?>">
+<input type="hidden" name="reward_point" id="reward_point" value="<?php echo $reward_point?>">
+<input type="hidden" name="reward_redeemed" id="reward_redeemed" value="no">
+<input type="hidden" name="redeemed_points" id="redeemed_points" value="">
+
+<button type="submit" class="btn btn-warning confirmbtn" href="#">Confirm Order</button>
+
+</div>
+
+            </div>
+             
+              </div>
+              
+           
+             
+             <!--  <h5 class="total-price mb-0"><i class="lni lni-rupee"></i><span class="counter"><?php //echo $this->session->userdata('cart_total');?></span></h5><button type="submit" class="btn btn-warning" href="checkout-payment.html">Confirm Order</button> -->
+            </div>
+          </div>
+        </div>
+          </form>
+      </div>
+    </div>
+  
